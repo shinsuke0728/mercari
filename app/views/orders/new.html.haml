@@ -1,0 +1,78 @@
+.single-container
+  = render partial: "/subheader"
+
+  .single-main
+    .l-single-container.buy-item-container
+      %h2.l-single-head 購入を確定しますか？
+      .buy-content_confirm.buy-item
+        .buy-content_confirm-inner
+          %h3.buy-item-image
+            = image_tag "#{@item.item_images[0].item_image_src}",   size: "148x148"
+          %p.buy-item-name.bold= @item.item_name
+          .buy-form
+            = form_with model: @order, url: item_orders_path(@item), local: true do |f|
+              %p.buy-price-ja= @item.price.to_s(:currency, unit: "¥", precision: 0)
+              %span.item-shipping-fee= @item.ship_burden
+              %ul.buy-accordion
+                %li.accordion-parent
+
+                  .accordion-toggle ポイントを使う
+                  %ul.accordion-child
+                    %li.possession 所持ポイント： P
+                    %li.points 500
+                    %li.form-group_radio
+                      .radio-default
+                        %label{for: "radio_button1"}
+                          %input{type: "radio", name: "consume_point_radio", class: "radio_button", id: "radio_button1", value: "none"}
+                          %span.radio_point1 ポイントを使わない
+                      .radio-default
+                        %label{for: "radio_button2"}
+                          %input{type: "radio", name: "consume_point_radio", class: "radio_button", id: "radio_button2", value: "all"}
+                            %span.radio_point2
+                              全てのポイントを使う
+                            %p.point_1 P
+                            %p.point_2 499
+                      .radio-default
+                        %label{for: "radio_button3"}
+                          %input{type: "radio", name: "consume_point_radio", class: "radio_button", id: "radio_button3", value: "partial"}
+                            %span.radio_point1 一部のポイントを使う
+                        %input{ class: "input-default_point", placeholder: "使うポイントを入力", value: ""}
+
+              %ul.buy-price-table
+                %li.buy-price-row.buy-you-pay.bold
+                  .buy-price-cell_1
+                    支払い金額
+                  .buy-price-cell_2
+                    %p.total_price= @item.price.to_s(:currency, unit: "¥", precision: 0)
+                - if current_user.credits.present? && current_user.user_detail.present?
+                  = f.submit '購入する', class: 'btn-default btn-red'
+                - else
+                  %p 本人確認情報、クレジットカード
+                  %p を登録してください
+
+      .buy-content_confirm.buy-user-info
+        .buy-content_confirm-inner
+          %h3.shipping_address 配送先
+          - if current_user.user_detail.present?
+            %address.buy-user-info-text
+              = "〒" + current_user.user_detail.address.postal_code.to_s
+              %br= current_user.user_detail.address.prefecture.prefecture_name + current_user.user_detail.address.city + current_user.user_detail.address.block
+              %br= current_user.user_detail.address.last_name + current_user.user_detail.address.first_name
+          /TODO edit_user_address_path(current_user, @address)
+          = link_to new_user_userconfirm_path(current_user), class: "buy-user-info-fix" do
+            %span.edit 変更する
+            %i.fas.fa-angle-right
+      .buy-content_confirm.buy-user-info
+        .buy-content_confirm-inner
+          %h3.shipping_address 支払い方法
+          - if current_user.credits.present?
+            %p.buy-user-info-text
+              = "************" + @mycard.last4.to_s
+              %br= @mycard.exp_month.to_s + " / " + @mycard.exp_year.to_s[2,2]
+          = link_to credits_path(current_user), class: "buy-user-info-fix" do
+            %span 変更する
+            %i.fas.fa-angle-right
+
+
+  .single-footer
+    = render partial: "/subfooter"

@@ -1,0 +1,70 @@
+%header.pc-header.visible-sp
+  .pc-header-inner
+    .clearfix
+      %h1.l.left
+        = link_to root_path, {height: "36", width: "134"} do
+          %img{:alt => "mercari", :height => "36", :src => "//www-mercari-jp.akamaized.net/assets/img/common/common/logo.svg?4139329709", :width => "134"}
+      %form.pc-header-form.l-right{:action => "https://www.mercari.com/jp/search/"}
+        .search-box
+          %input.input-default{:name => "keyword", :placeholder => "キーワードから探す", :type => "search", :value => "",:height => "36"}
+          %i.fas.fa-search
+    .pc-header-nav-box-clearfix
+      .pc-header-nav-root
+        %nav.l-left
+          %ul.pc-header-nav.menu_category_brand
+            %li.menu_category
+              .category_list_link
+                = link_to "カテゴリーから探す", categories_path
+                .header_category
+                  %ul
+                    - @header_categories.each do |category1|
+                      %li
+                        = link_to category_path(category1) do
+                          = category1.category_name
+                        %ul.humans_category
+                          - category1.children.each do |category2|
+                            %li.human
+                              = link_to category_path(category2) do
+                                = category2.category_name
+                              %ul.clothes_content
+                                - category2.children.each do |category3|
+                                  %li
+                                    = link_to category_path(category3) do
+                                      = category3.category_name
+
+            %li.menu_brand
+              = link_to root_path, class: "brand_list_link" do
+                ブランドから探す
+              %ul.menu_brand-list
+                %li.menu_brand-list__second-level
+                  = link_to '#', class: "init-right" do
+                    シャネル
+                %li.menu_brand-list__second-level
+                  = link_to '#', class: "init-right" do
+                    ナイキ
+                %li.menu_brand-list__second-level
+                  = link_to '#', class: "init-right" do
+                    ルイヴィトン
+
+            %li.l-right
+              %ul.pc-header-user-nav
+                - if user_signed_in?
+                  %li.one
+                    = link_to user_mypage_path(current_user), class: "sp-header-user-icon pc-header-nav-root" do
+                      %figure
+                        %img{alt: "", src: "", width: "32"}
+                      %div
+                        マイページ
+                  %li.two
+                    %a.sp-header-user-icon.pc-header-nav-root
+                      %i.far.fa-bell
+                        お知らせ
+                  %li.three
+                    %a.sp-header-user-icon.pc-header-nav-root
+                      %i.fas.fa-check
+                        やることリスト
+                - else
+                  %li.right-nav
+                    = link_to '新規会員登録', new_user_path, class: "right-nav__registration"
+                  %li.right-nav
+                    = link_to 'ログイン', new_user_session_path, class: "right-nav__login"

@@ -1,0 +1,179 @@
+.container
+  = render './header.html.haml'
+  = render './bread_crumb'
+  .default-container
+    %section.item-box-container.l-single-container
+      %h1.item-name
+        = @item.item_name
+      .item-main-content.clearfix
+        .item-photo
+          .owl-carousel.owl-loaded.owl-drag
+            .owl-stage-outer
+              .owl-stage
+                .owl-item.active
+                  .owl-item-inner
+                    - @item.item_images.each do |item_image|
+                      = image_tag "#{item_image.item_image_src}", size: "300x300", id: "main_image"
+                .owl-item
+                  .owl-item-inner
+                .owl-item
+                  .owl-item-inner.is-higher-width
+                .owl-item
+                  .owl-item-inner.is-higher-width
+            .owl-nav.disabred
+            .owl-dots
+              - @item.item_images.limit(4).each do |item_image|
+                .owl-dot
+                  %span
+                  .owl-dot-inner
+                    = image_tag "#{item_image.item_image_src}", size: "75x75", class: "owl"
+
+        .item-price-box.text-center.visible-sp
+          %span.item-price
+          %span.item-tax
+          %span.item-shipping-fee
+        %section.visible-sp
+          %a.item-buy-btn.f18-24
+
+        %table.item-detail-table
+          %tbody
+            %tr
+              %th 出品者
+              %td
+                = link_to user_mypage_path(@item.user_id) do
+                  = @item.user.nickname
+                %div
+                  .item-user-ratings
+                    = fa_icon 'smile', class: "smile"
+                    %span 536
+                  .item-user-ratings
+                    = fa_icon 'meh', class: "meh"
+                    %span 20
+                  .item-user-ratings
+                    = fa_icon 'frown', class: "bad"
+                    %span 3
+            %tr
+              %th カテゴリー
+              %td
+                %a
+                - @item.categories.where(parent_id: 0).each do |category|
+                  = category.category_name
+                %a
+                  .item-detail-table-sub-category
+                    = fa_icon 'angle-right', class: "right"
+                    - @item.categories.where(parent_id: 1..13).each do |category|
+                      = category.category_name
+                %a
+                  .item-detail-table-sub-sub-category
+                    = fa_icon 'angle-right', class: "right"
+                    - @item.categories.where(parent_id: 14..166).each do |category|
+                      = category.category_name
+            %tr
+              %th ブランド
+              - if @item.brands.present?
+                - @item.brands.each do |brand|
+                  %td #{brand.brand_name}
+            %tr
+              %th 商品の状態
+              %td
+                = @item.quality
+            %tr
+              %th 配送料の負担
+              %td
+                = @item.ship_burden
+            %tr
+              %th 配送の方法
+              %td
+                = @item.ship_method
+            %tr
+              %th 配送元地域
+              %td
+                = link_to "#" do
+                  = @item.prefecture.prefecture_name
+            %tr
+              %th 発送日の目安
+              %td
+                = @item.ship_date
+
+      .item-price-box.text-center
+        %span.item-price
+          = @item.price.to_s(:currency, unit: "¥", precision: 0)
+        %span.item-tax (税込)
+        %span.item-shipping-fee 送料込み
+      - if @item.status == "listing"
+        = link_to "購入画面に進む", new_item_order_path(@item), class: "item-buy-btn f18-24"
+      - else
+        .item-buy-btn.sold 売り切れました
+      .item-description.f14
+        %p.item-description-inner
+          = @item.detail
+
+      .item-button-container.clearfix
+        .item-button-left
+          %a.item-button.item-button-like
+            = fa_icon 'heart'
+            %span いいね!
+            %span 13
+          %a.item-button.item-button-report.clearfix
+            = fa_icon 'flag'
+            %span 不適切な商品の報告
+        .item-button-right
+          .description-page
+            = link_to "#" do
+              = fa_icon 'lock'
+              %span あんしん・あんぜんへの取り組み
+
+.item-detail-message
+  .message-container
+    %form.message-form
+      %p 相手のことを考え丁寧なコメントを心がけましょう。不快な言葉遣いなどは利用制限や退会処分となることがあります。
+      %textarea.textarea-default
+      %button.message-submit.btn-default.btn-gray
+        %span コメントする
+%ul.nav-detail-item.clearfix
+  %li.nav-item-link-prev
+    %a
+      = fa_icon 'angle-left', class: 'lock-icon'
+      VANS スニーカー
+  %li.nav-item-link-next
+    %a
+      ATSUGIフラワードット側ストッキング
+      = fa_icon 'angle-right', class: 'lock-icon'
+.item-social-media-box
+  %ul.social-media-box
+    %li
+      %a
+        = fa_icon 'facebook-square' , class: 'sns-icon facebook-icon'
+    %li
+      %a
+        = fa_icon 'twitter' , class: 'sns-icon twitter-icon'
+    %li
+      %a
+        = fa_icon 'pinterest-square' , class: 'sns-icon pinterest-icon'
+.item-in-user-profile
+  .items-profile.items-box-content.clearfix
+    %h2.items-box-head.bold
+      = link_to "#", class: 'user-page-pro' do
+        #{@item.user.nickname}さんのその他の出品
+        .item-boxes
+          .item-box
+            - @items.each do |item|
+              = link_to item_path(item) do
+                = image_tag "#{item.item_images[0].item_image_src}", size: "220x220"
+                .item-box-content
+                  %h4.item-box-content__name
+                    = item.item_name
+                  .item-info
+                    .price-box
+                      %p.price-box__price
+                        = item.price.to_s(:currency, unit: "¥", precision: 0)
+                      %p.price-box__tax (税込)
+                    .likes-box
+                      = fa_icon 'heart'
+                      %span 100
+
+
+
+
+= render './footer.html.haml'
+
